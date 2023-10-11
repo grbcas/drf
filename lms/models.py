@@ -3,7 +3,7 @@ from django.db import models
 NULLABLE = {'null': True, 'blank': True}
 
 
-class Course:
+class Course(models.Model):
 
     name = models.CharField(max_length=150, unique=True)
     img_preview = models.ImageField(verbose_name='avatar', **NULLABLE)
@@ -17,7 +17,7 @@ class Course:
         verbose_name_plural = 'Courses'
 
 
-class Lesson:
+class Lesson(models.Model):
 
     name = models.CharField(max_length=150, **NULLABLE)
     img_preview = models.ImageField(verbose_name='avatar', **NULLABLE)
