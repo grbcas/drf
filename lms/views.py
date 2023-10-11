@@ -1,4 +1,4 @@
-import django_filters
+from django_filters import rest_framework as filters
 from rest_framework import viewsets, generics
 from rest_framework.filters import SearchFilter, OrderingFilter
 
@@ -38,7 +38,6 @@ class PaymentListAPIView(generics.ListAPIView):
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
 
-    # filter_backends = (filters.DjangoFilterBackend,)
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
     filterset_fields = ('course', 'lesson', 'payment_method')
-    # ordering_fields = ['date']
+    ordering_fields = ('date',)
