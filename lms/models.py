@@ -8,8 +8,13 @@ NULLABLE = {'null': True, 'blank': True}
 class Course(models.Model):
 
     name = models.CharField(max_length=150, unique=True)
-    img_preview = models.ImageField(verbose_name='avatar', **NULLABLE)
-    description = models.TextField(verbose_name='description', **NULLABLE)
+    img_preview = models.ImageField(verbose_name='Avatar', **NULLABLE)
+    description = models.TextField(verbose_name='Description', **NULLABLE)
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             related_name='courses',
+                             verbose_name='User',
+                             **NULLABLE)
 
     def __str__(self):
         return f'{self.name}'
@@ -27,7 +32,14 @@ class Lesson(models.Model):
     link_video = models.URLField(verbose_name='link_video', **NULLABLE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE,
                                related_name='lessons',
-                               verbose_name='Course', **NULLABLE)
+                               verbose_name='Course',
+                               **NULLABLE)
+
+    # user = models.ForeignKey(User,
+    #                          on_delete=models.CASCADE,
+    #                          related_name='lessons',
+    #                          verbose_name='User',
+    #                          **NULLABLE)
 
     def __str__(self):
         return f'{self.name}'
@@ -39,14 +51,11 @@ class Lesson(models.Model):
 
 class Payment(models.Model):
 
-    # PAYMENT_METHOD = {0: 'cash', 1: 'non-cash'}
     PAYMENT_METHOD = [(0, 'cash'), (1, 'non-cash')]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='User')
     date = models.DateTimeField(auto_now_add=True, verbose_name='Payment Date')
     status = models.BooleanField(default=True, verbose_name='Payment status')
     payment_amount = models.FloatField(verbose_name='Payment amount')
-    # payment_method = models.PositiveSmallIntegerField(default=PAYMENT_METHOD[0], verbose_name='payment method')
     payment_method = models.PositiveSmallIntegerField(max_length=2,
                                                       choices=PAYMENT_METHOD,
                                                       default='cash',
@@ -63,6 +72,11 @@ class Payment(models.Model):
                                related_name='payments',
                                verbose_name='Lesson',
                                **NULLABLE)
+
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             related_name='payments',
+                             verbose_name='User')
 
     def __str__(self):
         return f'{self.payment_amount, self.course, self.lesson}'
