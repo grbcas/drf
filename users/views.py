@@ -1,12 +1,24 @@
-from rest_framework import generics
+from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 from users.models import User
-from users.permissions import IsUser, ReadOnly
+from users.permissions import IsUserOrReadOnly
 from users.serializers import UserSerializer
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def perform_create(self, serializer):
+        user = super().perform_create(serializer)
+
+        if user is not None:
+            password = self.request.data['password']
+            user.set_password(password)
+            user.save()
+        return user
 
 
 class UserListAPIView(generics.ListAPIView):
@@ -20,18 +32,17 @@ class UserUpdateAPIView(generics.UpdateAPIView):
 
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    permission_classes = [IsUser]
+    permission_classes = [IsUserOrReadOnly]
 
 
+class UserRetrieveAPIView(generics.RetrieveAPIView):
 
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    # queryset = User.objects.values("email")
 
+    def get_permissions(self):
+        permission_classes = [IsUserOrReadOnly]
+        return [permission() for permission in permission_classes]
 
-# class ExampleView(APIView):
-#     permission_classes = [IsAuthenticated | ReadOnly]
-#
-#     def get(self, request, format=None):
-#         content = {
-#             'status': 'request was permitted'
-#         }
-#         return Response(content)
 

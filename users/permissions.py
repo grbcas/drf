@@ -1,11 +1,12 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
-class IsUser(BasePermission):
-    def has_permission(self, request, view):
-        return request.user == view.get_object().user
+class IsUserOrReadOnly(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests.
+        if request.method in SAFE_METHODS:
+            return True
+        return obj.user == request.user
 
-
-class ReadOnly(BasePermission):
-    def has_permission(self, request, view):
-        return request.method in SAFE_METHODS
+        # return str(request.user) == view.get_object().email
