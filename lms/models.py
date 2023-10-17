@@ -35,11 +35,11 @@ class Lesson(models.Model):
                                verbose_name='Course',
                                **NULLABLE)
 
-    # user = models.ForeignKey(User,
-    #                          on_delete=models.CASCADE,
-    #                          related_name='lessons',
-    #                          verbose_name='User',
-    #                          **NULLABLE)
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             related_name='lessons',
+                             verbose_name='User',
+                             **NULLABLE)
 
     def __str__(self):
         return f'{self.name}'

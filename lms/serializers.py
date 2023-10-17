@@ -4,14 +4,15 @@ from lms.models import Course, Lesson, Payment
 
 
 class LessonSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Lesson
-        fields = ['id', 'name', 'description', 'course']
+        fields = ['id', 'name', 'description', 'course', 'user']
 
 
 class CourseSerializer(serializers.ModelSerializer):
-
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     lesson_count = serializers.SerializerMethodField()
 
     lessons = LessonSerializer(many=True, required=False)
@@ -22,7 +23,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'name', 'img_preview', 'description', 'lesson_count', 'lessons']
+        fields = ['id', 'name', 'img_preview', 'description', 'lesson_count', 'lessons', 'user']
 
 
 class PaymentSerializer(serializers.ModelSerializer):
