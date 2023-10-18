@@ -23,9 +23,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class UserListAPIView(generics.ListAPIView):
 
-    serializer_class = UserSerializer
+    serializer_class = UserProfileSerializer
     queryset = User.objects.all()
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
 
 class UserUpdateAPIView(generics.UpdateAPIView):
