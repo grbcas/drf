@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from users.models import User
 from users.permissions import IsUserOrReadOnly
-from users.serializers import UserSerializer
+from users.serializers import UserSerializer, UserProfileSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -37,7 +37,7 @@ class UserUpdateAPIView(generics.UpdateAPIView):
 
 class UserRetrieveAPIView(generics.RetrieveAPIView):
 
-    serializer_class = UserSerializer
+    serializer_class = UserProfileSerializer
     queryset = User.objects.all()
     # queryset = User.objects.values("email")
 
