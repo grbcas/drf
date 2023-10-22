@@ -1,3 +1,24 @@
-from django.test import TestCase
+from rest_framework.test import APITestCase
 
-# Create your tests here.
+
+class LmsTestCase(APITestCase):
+
+    def setUp(self) -> None:
+        pass
+
+    def test_create_Lesson(self):
+        """
+        Test - create Lesson
+        :return:
+        """
+        data = {
+            'name': 'test',
+            'description': 'test'
+        }
+
+        response = self.client.post(
+            '/lessons/',
+            data=data
+        )
+
+        

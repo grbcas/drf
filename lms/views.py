@@ -3,9 +3,9 @@ from rest_framework import viewsets, generics
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
-from lms.models import Course, Lesson, Payment
+from lms.models import Course, Lesson, Payment, Subscription
 from lms.permissions import IsModerator, IsOwnerOrModerator, IsOwner
-from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer
+from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer, SubscriptionSerializer
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -60,3 +60,15 @@ class PaymentListAPIView(generics.ListAPIView):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
     filterset_fields = ('course', 'lesson', 'payment_method')
     ordering_fields = ('date',)
+
+
+class SubscribeCreateAPIView(generics.CreateAPIView):
+    serializer_class = SubscriptionSerializer
+    queryset = Subscription.objects.all()
+    permission_classes = [IsAuthenticated]
+
+
+class SubscribeDestroyAPIView(generics.DestroyAPIView):
+    serializer_class = SubscriptionSerializer
+    queryset = Subscription.objects.all()
+    permission_classes = [IsAuthenticated]

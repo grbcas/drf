@@ -56,8 +56,7 @@ class Payment(models.Model):
     date = models.DateTimeField(auto_now_add=True, verbose_name='Payment Date')
     status = models.BooleanField(default=True, verbose_name='Payment status')
     payment_amount = models.FloatField(verbose_name='Payment amount')
-    payment_method = models.PositiveSmallIntegerField(max_length=2,
-                                                      choices=PAYMENT_METHOD,
+    payment_method = models.PositiveSmallIntegerField(choices=PAYMENT_METHOD,
                                                       default='cash',
                                                       verbose_name='payment method')
 
@@ -84,3 +83,25 @@ class Payment(models.Model):
     class Meta:
         verbose_name = 'Payment'
         verbose_name_plural = 'Payments'
+
+
+class Subscription(models.Model):
+
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             verbose_name='User',
+                             related_name='subscriptions',
+                             **NULLABLE)
+
+    course = models.ForeignKey(Course,
+                               on_delete=models.CASCADE,
+                               verbose_name='Course',
+                               related_name='subscriptions',
+                               **NULLABLE)
+
+    def __str__(self):
+        return f'{self.pk} {self.user}:{self.course}'
+
+    class Meta:
+        verbose_name = 'Subscription'
+        verbose_name_plural = 'Subscriptions'

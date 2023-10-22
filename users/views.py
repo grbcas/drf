@@ -1,7 +1,6 @@
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
-
 from users.models import User
 from users.permissions import IsUserOrReadOnly
 from users.serializers import UserSerializer, UserProfileSerializer
@@ -44,5 +43,3 @@ class UserRetrieveAPIView(generics.RetrieveAPIView):
     def get_permissions(self):
         permission_classes = [IsUserOrReadOnly]
         return [permission() for permission in permission_classes]
-
-
