@@ -10,6 +10,7 @@ class LessonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lesson
+        ordering = ['id']
         fields = ['id', 'name', 'description', 'course', 'user', 'link_video']
 
 
