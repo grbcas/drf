@@ -1,6 +1,7 @@
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, generics
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from lms.models import Course, Lesson, Payment, Subscription
@@ -8,9 +9,16 @@ from lms.permissions import IsModerator, IsOwnerOrModerator, IsOwner
 from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer, SubscriptionSerializer
 
 
+class LmsPageNumberPagination(PageNumberPagination):
+    page_size = 1
+    page_size_query_param = 'page size'
+    max_page_size = 10
+
+
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
+    pagination_class = LmsPageNumberPagination
 
     def get_permissions(self):
         """
@@ -30,6 +38,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
 
 
 class LessonListAPIView(generics.ListAPIView):
+    pagination_class = LmsPageNumberPagination
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated & IsOwnerOrModerator]

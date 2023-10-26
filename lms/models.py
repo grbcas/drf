@@ -103,5 +103,8 @@ class Subscription(models.Model):
         return f'{self.pk} {self.user}:{self.course}'
 
     class Meta:
+        unique_together = ('course', 'user')
         verbose_name = 'Subscription'
         verbose_name_plural = 'Subscriptions'
+
+# заменить на many2many field -если нет дополнительных полей

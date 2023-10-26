@@ -1,6 +1,7 @@
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
+from lms.permissions import IsOwnerOrModerator, IsOwner
 from users.models import User
 from users.permissions import IsUserOrReadOnly
 from users.serializers import UserSerializer, UserProfileSerializer
@@ -27,19 +28,19 @@ class UserListAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class UserUpdateAPIView(generics.UpdateAPIView):
+# class UserUpdateAPIView(generics.UpdateAPIView):
+#
+#     serializer_class = UserSerializer
+#     queryset = User.objects.all()
+#     permission_classes = [IsUserOrReadOnly]
 
-    serializer_class = UserSerializer
+
+class UserRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+
     queryset = User.objects.all()
-    permission_classes = [IsUserOrReadOnly]
 
-
-class UserRetrieveAPIView(generics.RetrieveAPIView):
-
-    serializer_class = UserProfileSerializer
-    queryset = User.objects.all()
-    # queryset = User.objects.values("email")
-
-    def get_permissions(self):
-        permission_classes = [IsUserOrReadOnly]
-        return [permission() for permission in permission_classes]
+    def get_serializer_class(self):
+        if IsOwnerOrModerator():
+            return UserSerializer
+        else:
+            return UserProfileSerializer

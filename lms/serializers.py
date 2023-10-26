@@ -21,22 +21,29 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    # user = serializers.CharField(default=serializers.CurrentUserDefault()) #
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())    #
+    current_user = serializers.CharField(default=serializers.CurrentUserDefault())  #
     lesson_count = serializers.SerializerMethodField()
     lessons = LessonSerializer(many=True, required=False)
-    subscription = SubscriptionSerializer()
+    # subscription = SubscriptionSerializer()
+    is_subscribed = serializers.SerializerMethodField()
 
     @staticmethod
     def get_lesson_count(obj):
         return Lesson.objects.filter(course=obj.pk).count()
 
-    @staticmethod
-    def get_subscription(obj):
-        return Subscription.objects.filter(course=obj.pk)
+    # @staticmethod
+    # def get_subscription(obj):
+    #     return Subscription.objects.filter(course=obj.pk)
+
+    def get_is_subscribed(self, instance):
+        user = self.context['request'].user
+        return instance.subscriptions.filter(user=user).exists()
 
     class Meta:
         model = Course
-        fields = ['id', 'name', 'img_preview', 'description', 'lesson_count', 'lessons', 'user', 'subscription']
+        fields = ['id', 'name', 'img_preview', 'description', 'lesson_count', 'lessons', 'user', 'current_user', 'is_subscribed']
 
 
 class PaymentSerializer(serializers.ModelSerializer):
