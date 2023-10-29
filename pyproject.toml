@@ -8,6 +8,12 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 python-dotenv = "^1.0.0"
+djangorestframework = "^3.14.0"
+celery = "^5.3.4"
+eventlet = "^0.33.3"
+drf-yasg = "^1.21.7"
+django-cors-headers = "^4.3.0"
+requests = "^2.31.0"
 
 
 [build-system]

@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from lms.models import Course, Lesson, Payment, Subscription
 from lms.permissions import IsModerator, IsOwnerOrModerator, IsOwner
 from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer, SubscriptionSerializer
+from lms.services.payments import create_payment, retrieve_payment
 
 
 class LmsPageNumberPagination(PageNumberPagination):
@@ -16,6 +17,7 @@ class LmsPageNumberPagination(PageNumberPagination):
 
 
 class CourseViewSet(viewsets.ModelViewSet):
+    """ Viewset for Course """
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
     pagination_class = LmsPageNumberPagination
@@ -61,16 +63,6 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
     permission_classes = [IsAdminUser | IsOwner]
 
 
-class PaymentListAPIView(generics.ListAPIView):
-    serializer_class = PaymentSerializer
-    queryset = Payment.objects.all()
-    permission_classes = [IsAuthenticated & IsOwnerOrModerator]
-
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
-    filterset_fields = ('course', 'lesson', 'payment_method')
-    ordering_fields = ('date',)
-
-
 class SubscribeCreateAPIView(generics.CreateAPIView):
     serializer_class = SubscriptionSerializer
     queryset = Subscription.objects.all()
@@ -81,3 +73,34 @@ class SubscribeDestroyAPIView(generics.DestroyAPIView):
     serializer_class = SubscriptionSerializer
     queryset = Subscription.objects.all()
     permission_classes = [IsAuthenticated]
+
+
+class PaymentListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+    permission_classes = [IsAuthenticated & IsOwnerOrModerator]
+
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter)
+    filterset_fields = ('course', 'lesson', 'payment_method')
+    ordering_fields = ('date',)
+
+    def perform_create(self, serializer):
+        payment_id = create_payment(self.request.data['amount'])
+        print(payment_id)
+        serializer.is_valid()
+        serializer.save(stripe_id=payment_id)
+
+
+class PaymentRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+
+    def perform_update(self, serializer):
+        obj = self.get_object()
+        print(obj)
+        print(obj.stripe_id)
+        payment_id = obj.stripe_id
+        get_payment_response = retrieve_payment(payment_id)
+        print(payment_id, get_payment_response)
+        if get_payment_response:
+            serializer.save(status=1)

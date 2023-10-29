@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from lms.models import Course, Lesson, Payment, Subscription
+from lms.services.payments import create_payment
 from lms.validators import OnlyYoutubeUrl
 
 
@@ -48,6 +49,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class PaymentSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Payment

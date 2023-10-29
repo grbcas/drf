@@ -54,8 +54,9 @@ class Payment(models.Model):
     PAYMENT_METHOD = [(0, 'cash'), (1, 'non-cash')]
 
     date = models.DateTimeField(auto_now_add=True, verbose_name='Payment Date')
-    status = models.BooleanField(default=True, verbose_name='Payment status')
-    payment_amount = models.FloatField(verbose_name='Payment amount')
+    status = models.BooleanField(default=False, verbose_name='Payment status')
+    amount = models.FloatField(verbose_name='Payment amount')
+    stripe_id = models.CharField(verbose_name='Stripe id', **NULLABLE)
     payment_method = models.PositiveSmallIntegerField(choices=PAYMENT_METHOD,
                                                       default='cash',
                                                       verbose_name='payment method')
@@ -78,7 +79,7 @@ class Payment(models.Model):
                              verbose_name='User')
 
     def __str__(self):
-        return f'{self.payment_amount, self.course, self.lesson}'
+        return f'{self.amount, self.course, self.lesson, self.status, self.stripe_id}'
 
     class Meta:
         verbose_name = 'Payment'
