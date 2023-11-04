@@ -1,13 +1,17 @@
+import time
+from django.utils import timezone
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, generics
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.reverse import reverse
 
 from lms.models import Course, Lesson, Payment, Subscription
 from lms.permissions import IsModerator, IsOwnerOrModerator, IsOwner
 from lms.serializers import CourseSerializer, LessonSerializer, PaymentSerializer, SubscriptionSerializer
 from lms.services.payments import create_payment, retrieve_payment
+from lms.tasks import task_send_updates
 
 
 class LmsPageNumberPagination(PageNumberPagination):
@@ -32,6 +36,15 @@ class CourseViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
+
+    def perform_update(self, serializer):
+        course = self.get_object()
+        update_timedelta = (timezone.now() - course.last_update).seconds
+        serializer.save()
+
+        if update_timedelta >= 4*3600:
+            course_url = self.request.build_absolute_uri(reverse('courses:courses', kwargs={'pk': course.pk}))
+            task_send_updates.delay(course.pk, course_url)
 
 
 class LessonCreateAPIView(generics.CreateAPIView):

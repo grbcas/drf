@@ -78,6 +78,8 @@ class Payment(models.Model):
                              related_name='payments',
                              verbose_name='User')
 
+    last_update = models.DateTimeField(auto_now=True, verbose_name='Last update')
+
     def __str__(self):
         return f'{self.amount, self.course, self.lesson, self.status, self.stripe_id}'
 

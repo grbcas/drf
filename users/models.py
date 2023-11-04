@@ -13,6 +13,8 @@ class User(AbstractUser):
     city = models.CharField(max_length=50, **NULLABLE)
     avatar = models.ImageField(verbose_name='avatar', **NULLABLE)
     # is_verified = models.BooleanField(default=False, verbose_name='is_verified')
+    # is_active = models.BooleanField(default=False, verbose_name='is_active')
+    # last_login = models.DateTimeField(blank=True, null=True, verbose_name='last login')
 
     def __str__(self):
         return self.email
